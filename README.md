@@ -1,258 +1,209 @@
-# Building LLM Systems from Scratch (C++ + Rust Roadmap)
+# LLM Core Systems — Foundation Roadmap (C++ + Rust)
 
-This document is a practical, step-by-step roadmap for learning how modern Large Language Model (LLM) systems work by building their core components from scratch using **C++ first**, then extending into **Rust**, and finally connecting everything to **Python / JavaScript**.
+This is a practical, step-by-step roadmap for understanding how modern Large Language Models work by **building their core functions and algorithms from scratch** — in **C++ first**, then extending into **Rust**, and finally exposing everything to **Python / JavaScript**.
 
 ---
 
-# Core Idea
+## Core Idea
 
-You are not trying to build a full ChatGPT-scale model.
+> This is not about building a language model.
+> This is about building **every type of core function and algorithm that a language model depends on**.
 
-Instead, you are building:
-
-> The fundamental systems that make LLMs possible.
+The goal is to deeply understand the infrastructure layer — the systems that make LLMs possible — by implementing them yourself.
 
 This includes:
 
-* Tensor computation systems
-* Automatic differentiation (backpropagation)
-* Neural network layers
-* Tokenization systems
-* Transformer components
-* Inference engines
-* Language bindings (Python / JS)
+- Tensor computation systems
+- Automatic differentiation (backpropagation)
+- Neural network layer functions
+- Tokenization algorithms
+- Transformer component logic
+- Inference and forward-pass engines
+- Language runtime bindings (Python / JS)
 
 ---
 
-# Phase 1 — C++ Fundamentals for AI Systems
+## Phase 1 — C++ Fundamentals for AI Systems
 
-## 1. Build a Tiny Tensor Library
+### 1. Tensor Library
 
-### Goal
+**Goal:** Implement the core data structure used in all neural computation.
 
-Create your own version of PyTorch tensors.
+**What to build:**
 
-### Features to implement:
+- N-dimensional array (Tensor class)
+- Shape and stride tracking
+- Element-wise operations: addition, subtraction, multiplication
+- Matrix multiplication
 
-* N-dimensional array (Tensor)
-* Shape tracking
-* Element-wise operations:
-
-  * addition
-  * subtraction
-  * multiplication
-* Matrix multiplication
-
-### Why it matters
-
-All LLMs are fundamentally large tensor computation graphs.
+**Why it matters:**
+All neural computation — including every operation inside a language model — runs on tensors. This is the base layer everything else depends on.
 
 ---
 
-## 2. Matrix Multiplication Engine (BLAS-lite)
+### 2. Matrix Multiplication Engine (BLAS-lite)
 
-### Goal
+**Goal:** Understand and optimize the most critical operation in neural networks.
 
-Understand the core operation behind neural networks.
+**What to build:**
 
-### Implement:
+- Naive matrix multiplication (baseline)
+- Cache-optimized version (loop reordering, tiling)
+- Multithreaded version (`std::thread` or OpenMP)
 
-* Naive matrix multiplication
-* Cache-optimized version
-* Multithreaded version (std::thread or OpenMP)
-
-### Why it matters
-
-Transformers rely heavily on matrix multiplication.
+**Why it matters:**
+Attention, projection layers, feed-forward networks — they are all matrix multiplications under the hood.
 
 ---
 
-## 3. Automatic Differentiation Engine (Autograd)
+### 3. Automatic Differentiation Engine (Autograd)
 
-### Goal
+**Goal:** Implement the algorithmic foundation of learning systems.
 
-Build the foundation of learning systems.
+**What to build:**
 
-### Implement:
+- Computation graph nodes
+- Forward pass execution
+- Backward pass with gradient computation (chain rule)
 
-* Computation graph nodes
-* Forward pass
-* Backward pass (gradient computation)
-
-### Result
-
-You will recreate a mini version of deep learning autograd systems.
+**Why it matters:**
+Autograd is what makes training possible. Every weight update in any neural network flows through a mechanism like this.
 
 ---
 
-## 4. Neural Network Library (Minimal)
+### 4. Neural Network Layer Library
 
-### Build on top of tensors + autograd:
+**Goal:** Build composable layer functions on top of tensors and autograd.
 
-* Dense (fully connected) layers
-* Activation functions:
+**What to build:**
 
-  * ReLU
-  * tanh
-* Loss functions:
+- Dense (fully connected) layer
+- Activation functions: ReLU, tanh, sigmoid
+- Loss functions: MSE, cross-entropy
 
-  * MSE
-  * Cross-entropy
+**First test tasks:**
 
-### First training tasks:
-
-* XOR problem
-* Simple classification dataset
+- XOR problem
+- Simple classification
 
 ---
 
-# Phase 2 — LLM-Relevant Components
+## Phase 2 — Language Model-Relevant Algorithms
 
-## 5. Tokenizer
+### 5. Tokenizer
 
-### Goal
+**Goal:** Implement the text preprocessing algorithms used before any language model processes input.
 
-Convert text into tokens (numbers).
+**What to build:**
 
-### Implement:
+- Whitespace tokenizer (baseline)
+- Byte Pair Encoding (BPE) — the algorithm used in most modern tokenizers
 
-* Basic whitespace tokenizer
-* Byte Pair Encoding (BPE)
-
-### Why it matters
-
-LLMs do not process raw text — they process tokens.
+**Why it matters:**
+Language models do not process raw characters. They process tokens — sequences of integers. The tokenizer is the algorithm that produces them.
 
 ---
 
-## 6. Mini Transformer Block
+### 6. Attention Mechanism
 
-### Goal
+**Goal:** Implement the core algorithmic unit of transformer-based architectures.
 
-Understand attention mechanism.
+**What to build:**
 
-### Implement:
+- Q, K, V projection (linear transforms via matrix multiplication)
+- Scaled dot-product attention
+- Softmax function
 
-* Q, K, V projection (matrix multiplication)
-* Scaled dot-product attention
-* Softmax
-
-### Outcome
-
-A working attention module (core of GPT-style models).
+**Why it matters:**
+Attention is the defining algorithm of transformer architectures. Understanding it at the math and code level is essential to understanding how language models process context.
 
 ---
 
-## 7. Inference Engine (C++ Runtime)
+### 7. Inference Engine (C++ Runtime)
 
-### Goal
+**Goal:** Build a minimal forward-pass runtime — the execution engine that runs a trained model.
 
-Run trained models efficiently.
+**What to build:**
 
-### Features:
+- Weight loading from file
+- Forward pass execution
+- Optimized inference pipeline
 
-* Load model weights
-* Run forward pass only
-* Optimized inference pipeline
-
-### Role
-
-This becomes your production LLM runtime layer.
+**Why it matters:**
+This becomes the production runtime layer — the system that takes model weights and executes them efficiently without any training overhead.
 
 ---
 
-# Phase 3 — Connect C++ to Python / JavaScript
+## Phase 3 — Language Bindings
 
-## 8. Python Bindings (pybind11)
+### 8. Python Bindings (pybind11)
 
-Expose C++ functions to Python:
+Expose C++ functions to Python so the systems you built can be used from higher-level code.
 
 ```cpp
+// C++ side
 Tensor matmul(Tensor a, Tensor b);
 ```
 
-Usage in Python:
-
 ```python
-import myllm
-myllm.matmul(a, b)
+# Python side
+import mylib
+mylib.matmul(a, b)
 ```
 
 ---
 
-## 9. JavaScript / Web Integration
+### 9. JavaScript / Web
 
 Options:
 
-* Compile C++ → WebAssembly (WASM)
-* Or expose REST API server
+- Compile C++ to WebAssembly (WASM) for in-browser execution
+- Expose a REST API server for remote inference
 
 ---
 
-# Phase 4 — Rust Expansion
+## Phase 4 — Rust Expansion
 
-## Why Rust?
+### Why Rust?
 
-* Memory safety
-* High performance
-* Better concurrency model
+- Memory safety without garbage collection
+- High-performance systems code
+- Better concurrency model for inference serving
 
-## Projects:
+### What to build:
 
-* Rewrite tensor engine in Rust
-* Build inference server
-* Explore ML frameworks:
-
-  * burn
-  * tch-rs
+- Rewrite the tensor engine in Rust
+- Build a production-grade inference server
+- Explore Rust ML ecosystem: `burn`, `tch-rs`, `candle`
 
 ---
 
-# Suggested Learning Order
+## Suggested Learning Order
 
-## Phase 1 (Core C++)
-
-* Tensor library
-* Matrix multiplication
-* Simple neural network
-
-## Phase 2
-
-* Autograd engine
-* Training simple models
-
-## Phase 3
-
-* Tokenizer
-* Attention mechanism
-
-## Phase 4
-
-* Inference engine
-* Python bindings
-
-## Phase 5 (Rust)
-
-* Rebuild core systems
-* Build production-grade inference server
+| Phase | Focus |
+|---|---|
+| Phase 1 | Tensor library → Matrix multiplication → Basic neural network layers |
+| Phase 2 | Autograd engine → Training simple models |
+| Phase 3 | Tokenizer → Attention algorithm |
+| Phase 4 | Inference engine → Python bindings |
+| Phase 5 (Rust) | Rebuild core systems → Production inference server |
 
 ---
 
-# Key Insight
+## Key Insight
 
-You are not building ChatGPT.
+> The goal is not to build a language model.
+> The goal is to build **every core function and algorithm that a language model is made of**.
 
-You are building:
-
-> The infrastructure that makes ChatGPT possible.
+By the end of this roadmap, you will have implemented — from scratch — the complete algorithmic foundation layer: tensors, gradients, attention, tokenization, and inference.
 
 ---
 
-# Optional Next Step
+## Strong Entry Points
 
-A strong next project would be:
+The best places to start:
 
-* A C++ Tensor class from scratch
-* Or a minimal Autograd engine
+- A `Tensor` class in C++ from scratch
+- A minimal `Autograd` engine with forward and backward pass
 
-These are the true entry points into LLM systems engineering.
+These two components are the true foundation. Everything else builds on top of them.
