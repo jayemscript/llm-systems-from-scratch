@@ -1,209 +1,345 @@
-# LLM Core Systems — Foundation Roadmap (C++ + Rust)
+# LLM Systems From Scratch
 
-This is a practical, step-by-step roadmap for understanding how modern Large Language Models work by **building their core functions and algorithms from scratch** — in **C++ first**, then extending into **Rust**, and finally exposing everything to **Python / JavaScript**.
+> **This is an open, educational repository.**
+> It is not a software product. It is not a deployable system.
+> It is a structured, hands-on learning project — open to everyone.
 
----
+This repository exists to help **students, engineers, and developers** deeply understand how Large Language Models work — not by using them, but by building every core function and algorithm they depend on, from scratch, in **C++ and Rust**.
 
-## Core Idea
-
-> This is not about building a language model.
-> This is about building **every type of core function and algorithm that a language model depends on**.
-
-The goal is to deeply understand the infrastructure layer — the systems that make LLMs possible — by implementing them yourself.
-
-This includes:
-
-- Tensor computation systems
-- Automatic differentiation (backpropagation)
-- Neural network layer functions
-- Tokenization algorithms
-- Transformer component logic
-- Inference and forward-pass engines
-- Language runtime bindings (Python / JS)
+No cloud. No APIs. No black boxes. Just code and fundamentals.
 
 ---
 
-## Phase 1 — C++ Fundamentals for AI Systems
+## Who This Is For
 
-### 1. Tensor Library
+- Students studying machine learning, systems programming, or AI
+- Engineers who want to understand what actually happens inside an LLM
+- Developers learning C++ or Rust through a meaningful, real-world problem domain
+- Anyone curious enough to go deeper than the surface
 
-**Goal:** Implement the core data structure used in all neural computation.
+---
 
-**What to build:**
+## What This Is Not
+
+- This is **not** a language model
+- This is **not** production software
+- This is **not** a framework or library meant for deployment
+- This is **not** affiliated with any AI company or product
+
+---
+
+## What This Is
+
+A **complete map of every core module an LLM is built on** — implemented one phase at a time, from the lowest level up.
+
+Every phase = one core module. Every module = one concept that a real language model cannot exist without.
+
+By the end, you will have built from scratch:
+
+```
+Tensors → Math → Autograd → Neural Layers → Embeddings →
+Tokenizer → Positional Encoding → Attention → Transformer →
+Normalization → Feed-Forward → Sampling → Inference Engine →
+Python Bindings → Rust Memory Layer
+```
+
+---
+
+## Language Stack
+
+| Layer | Language | Purpose |
+|---|---|---|
+| Core engine | C++ | All fundamental algorithms |
+| Memory safety layer | Rust (via FFI) | Specific subsystems plugged into C++ |
+| Bindings | Python / JavaScript | Expose C++ engine for scripting and web |
+
+> Rust does **not** replace C++. It extends it. Rust is used for specific components — memory management, safe concurrent pipelines, inference serving — and plugged into the C++ engine via FFI (Foreign Function Interface).
+
+---
+
+## Core Modules — Phase by Phase
+
+Each phase introduces one core module. That module is a real, named concept inside a real language model architecture.
+
+---
+
+### Phase 1 — Tensor
+
+**Module: Tensor Operations**
+> How LLMs store and compute on data
+
+Everything in a language model is a number in a multidimensional array. This phase builds the foundational data structure.
 
 - N-dimensional array (Tensor class)
 - Shape and stride tracking
-- Element-wise operations: addition, subtraction, multiplication
-- Matrix multiplication
-
-**Why it matters:**
-All neural computation — including every operation inside a language model — runs on tensors. This is the base layer everything else depends on.
+- Element-wise operations: add, subtract, multiply
+- Memory layout (row-major)
 
 ---
 
-### 2. Matrix Multiplication Engine (BLAS-lite)
+### Phase 2 — Linear Algebra Engine
 
-**Goal:** Understand and optimize the most critical operation in neural networks.
+**Module: Matrix Multiplication**
+> The single most-used operation in all of deep learning
 
-**What to build:**
+Every layer in a transformer — attention, projection, feed-forward — is a matrix multiplication. This phase builds and optimizes it.
 
 - Naive matrix multiplication (baseline)
-- Cache-optimized version (loop reordering, tiling)
-- Multithreaded version (`std::thread` or OpenMP)
-
-**Why it matters:**
-Attention, projection layers, feed-forward networks — they are all matrix multiplications under the hood.
+- Cache-optimized version (loop tiling)
+- Multithreaded version (`std::thread` / OpenMP)
 
 ---
 
-### 3. Automatic Differentiation Engine (Autograd)
+### Phase 3 — Autograd
 
-**Goal:** Implement the algorithmic foundation of learning systems.
+**Module: Automatic Differentiation**
+> How models learn — the algorithm behind every weight update
 
-**What to build:**
+Without autograd, there is no training. This phase builds the computation graph and the backward pass.
 
-- Computation graph nodes
+- Computation graph (nodes and edges)
 - Forward pass execution
-- Backward pass with gradient computation (chain rule)
-
-**Why it matters:**
-Autograd is what makes training possible. Every weight update in any neural network flows through a mechanism like this.
+- Backward pass — gradient computation via chain rule
 
 ---
 
-### 4. Neural Network Layer Library
+### Phase 4 — Neural Network Layers
 
-**Goal:** Build composable layer functions on top of tensors and autograd.
+**Module: Layer Functions**
+> The building blocks stacked inside every neural network
 
-**What to build:**
+This phase builds composable, trainable layers on top of tensors and autograd.
 
 - Dense (fully connected) layer
-- Activation functions: ReLU, tanh, sigmoid
+- Activation functions: ReLU, tanh, sigmoid, GELU
 - Loss functions: MSE, cross-entropy
-
-**First test tasks:**
-
-- XOR problem
-- Simple classification
+- Test: XOR problem, simple classification
 
 ---
 
-## Phase 2 — Language Model-Relevant Algorithms
+### Phase 5 — Embeddings
 
-### 5. Tokenizer
+**Module: Embedding Layer**
+> How LLMs convert token IDs into meaning
 
-**Goal:** Implement the text preprocessing algorithms used before any language model processes input.
+Tokens are integers. Embeddings turn those integers into vectors that carry semantic meaning — this is the first thing a transformer does with its input.
 
-**What to build:**
+- Embedding table (vocabulary × dimension)
+- Lookup operation
+- Gradient flow through embeddings
+
+---
+
+### Phase 6 — Tokenizer
+
+**Module: Tokenization**
+> How LLMs read text — converting raw strings into token sequences
+
+Language models do not read characters. They read tokens — integer IDs from a fixed vocabulary. This phase builds the algorithm that produces them.
 
 - Whitespace tokenizer (baseline)
-- Byte Pair Encoding (BPE) — the algorithm used in most modern tokenizers
-
-**Why it matters:**
-Language models do not process raw characters. They process tokens — sequences of integers. The tokenizer is the algorithm that produces them.
+- Byte Pair Encoding (BPE) — the core algorithm used in most real tokenizers
+- Vocabulary building
+- Encode and decode functions
 
 ---
 
-### 6. Attention Mechanism
+### Phase 7 — Positional Encoding
 
-**Goal:** Implement the core algorithmic unit of transformer-based architectures.
+**Module: Positional Encoding**
+> How LLMs know the order of tokens
 
-**What to build:**
+Attention has no built-in sense of position. This phase implements the algorithms that inject order information into the input sequence.
 
-- Q, K, V projection (linear transforms via matrix multiplication)
+- Sinusoidal positional encoding (original transformer)
+- Learned positional embeddings
+- Rotary Positional Encoding (RoPE) — used in modern architectures
+
+---
+
+### Phase 8 — Attention
+
+**Module: Attention Mechanism**
+> The core algorithm of transformer-based architectures
+
+This is the mechanism that allows a model to relate any token to any other token in a sequence, regardless of distance.
+
+- Q, K, V projections (linear transforms)
 - Scaled dot-product attention
-- Softmax function
-
-**Why it matters:**
-Attention is the defining algorithm of transformer architectures. Understanding it at the math and code level is essential to understanding how language models process context.
-
----
-
-### 7. Inference Engine (C++ Runtime)
-
-**Goal:** Build a minimal forward-pass runtime — the execution engine that runs a trained model.
-
-**What to build:**
-
-- Weight loading from file
-- Forward pass execution
-- Optimized inference pipeline
-
-**Why it matters:**
-This becomes the production runtime layer — the system that takes model weights and executes them efficiently without any training overhead.
+- Softmax
+- Causal (masked) attention — for autoregressive generation
+- Multi-head attention
 
 ---
 
-## Phase 3 — Language Bindings
+### Phase 9 — Normalization
 
-### 8. Python Bindings (pybind11)
+**Module: Layer Normalization**
+> How LLMs stay stable during training and inference
 
-Expose C++ functions to Python so the systems you built can be used from higher-level code.
+Without normalization, deep networks become numerically unstable. This phase implements the normalization used inside every transformer block.
 
+- Layer normalization (LayerNorm)
+- RMS normalization (RMSNorm) — used in modern architectures
+- Learnable scale and shift parameters (gamma, beta)
+
+---
+
+### Phase 10 — Feed-Forward Network
+
+**Module: Feed-Forward Block**
+> The computation that follows attention in every transformer layer
+
+Every transformer block has two parts: attention and a feed-forward network. This phase builds the FFN.
+
+- Two-layer MLP with activation
+- GELU activation function
+- Projection in → hidden → projection out
+- Role in transformer block (context: runs after attention)
+
+---
+
+### Phase 11 — Transformer Block
+
+**Module: Transformer Block**
+> One complete unit of a transformer — assembled from all prior modules
+
+This phase assembles the full transformer block from the components built in previous phases.
+
+- Pre-norm architecture (LayerNorm → Attention → residual)
+- Feed-forward sublayer (LayerNorm → FFN → residual)
+- Residual connections
+- Stacking N blocks into a full transformer backbone
+
+---
+
+### Phase 12 — Sampling & Output Head
+
+**Module: Sampling Algorithms**
+> How LLMs decide what token to generate next
+
+After the transformer runs, a probability distribution over the vocabulary is produced. This phase implements the algorithms that select the next token from it.
+
+- Linear projection to vocabulary (logits)
+- Softmax to probability distribution
+- Greedy decoding
+- Temperature scaling
+- Top-k sampling
+- Top-p (nucleus) sampling
+
+---
+
+### Phase 13 — Inference Engine
+
+**Module: Inference Runtime**
+> The execution engine — how a trained model runs efficiently
+
+This phase builds the runtime that loads weights and executes the full forward pass, without any training overhead.
+
+- Weight serialization and loading from file
+- Full forward pass pipeline
+- KV cache — stores past key/value pairs to avoid recomputation
+- Token generation loop (autoregressive decoding)
+
+---
+
+### Phase 14 — Language Bindings
+
+**Module: Python & JavaScript Bindings**
+> Exposing the C++ engine to higher-level languages
+
+This phase wraps the C++ engine so it can be used from Python scripts and web environments.
+
+**Python (pybind11):**
 ```cpp
 // C++ side
 Tensor matmul(Tensor a, Tensor b);
 ```
-
 ```python
 # Python side
-import mylib
-mylib.matmul(a, b)
+import llmsys
+llmsys.matmul(a, b)
 ```
 
----
-
-### 9. JavaScript / Web
-
-Options:
-
+**JavaScript / Web:**
 - Compile C++ to WebAssembly (WASM) for in-browser execution
-- Expose a REST API server for remote inference
+- Or expose a lightweight REST API
 
 ---
 
-## Phase 4 — Rust Expansion
+### Phase 15 — Rust Memory Layer
 
-### Why Rust?
+**Module: Rust FFI Components**
+> Precision components in Rust, plugged into the C++ engine
 
-- Memory safety without garbage collection
-- High-performance systems code
-- Better concurrency model for inference serving
+Rust does not replace C++. This phase builds specific subsystems in Rust where its ownership model and memory safety give a concrete advantage — then connects them to the C++ engine via FFI.
 
-### What to build:
+- Safe memory allocator (plugged into C++ tensor operations)
+- Concurrent data pipeline (safe multithreaded loading)
+- Inference server (async, no GC pauses, production-grade serving)
+- FFI interface layer between Rust and C++
 
-- Rewrite the tensor engine in Rust
-- Build a production-grade inference server
-- Explore Rust ML ecosystem: `burn`, `tch-rs`, `candle`
-
----
-
-## Suggested Learning Order
-
-| Phase | Focus |
-|---|---|
-| Phase 1 | Tensor library → Matrix multiplication → Basic neural network layers |
-| Phase 2 | Autograd engine → Training simple models |
-| Phase 3 | Tokenizer → Attention algorithm |
-| Phase 4 | Inference engine → Python bindings |
-| Phase 5 (Rust) | Rebuild core systems → Production inference server |
+Explore: [`burn`](https://github.com/tracel-ai/burn), [`candle`](https://github.com/huggingface/candle), [`tch-rs`](https://github.com/LaurentMazare/tch-rs)
 
 ---
 
-## Key Insight
+## Full Module Map
 
-> The goal is not to build a language model.
-> The goal is to build **every core function and algorithm that a language model is made of**.
-
-By the end of this roadmap, you will have implemented — from scratch — the complete algorithmic foundation layer: tensors, gradients, attention, tokenization, and inference.
+| Phase | Module | Concept in LLM |
+|---|---|---|
+| 1 | Tensor | Data storage and computation |
+| 2 | Matrix Multiplication | Core math operation |
+| 3 | Autograd | How models learn |
+| 4 | Neural Network Layers | Trainable building blocks |
+| 5 | Embeddings | Token → vector conversion |
+| 6 | Tokenizer | Text → token IDs |
+| 7 | Positional Encoding | Token order awareness |
+| 8 | Attention | Token-to-token relationships |
+| 9 | Normalization | Training and inference stability |
+| 10 | Feed-Forward Network | Per-token computation after attention |
+| 11 | Transformer Block | Full assembled unit |
+| 12 | Sampling & Output Head | Next-token selection |
+| 13 | Inference Engine | Runtime execution |
+| 14 | Language Bindings | Python / JS interface |
+| 15 | Rust Memory Layer | Safe, high-performance components via FFI |
 
 ---
 
-## Strong Entry Points
+## Open Collaboration
 
-The best places to start:
+This repository is **open for collaboration**. Everyone is welcome to contribute — whether you are a student, a researcher, a hobbyist, or a professional engineer.
 
-- A `Tensor` class in C++ from scratch
-- A minimal `Autograd` engine with forward and backward pass
+Ways to contribute:
 
-These two components are the true foundation. Everything else builds on top of them.
+- Implement a module in a phase
+- Write tests for an existing implementation
+- Improve documentation or add explanations
+- Add alternative implementations (different algorithms, different approaches)
+- Fix bugs or improve performance
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
+Please read [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for community standards.
+
+---
+
+## Requirements
+
+- C++17 or later
+- Rust (stable toolchain) — for Phase 15
+- No cloud accounts required
+- No paid APIs required
+- No GPU required (CPU-only by design for learning purposes)
+
+---
+
+## License
+
+MIT — free to use, study, fork, and build upon.
+
+---
+
+## A Note on Purpose
+
+This project exists because understanding AI at the source level matters.
+
+The goal is not to compete with existing frameworks. The goal is to make the internals legible — so that anyone who works through these phases comes away with a genuine understanding of what a language model is made of, one algorithm at a time.
