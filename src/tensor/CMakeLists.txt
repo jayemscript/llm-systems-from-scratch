@@ -1,3 +1,4 @@
+# tensor/CMakeLists.txt
 add_executable(tensor_main main.cpp)
 
 target_include_directories(tensor_main PRIVATE

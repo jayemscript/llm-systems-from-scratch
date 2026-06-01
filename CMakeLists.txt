@@ -1,8 +1,10 @@
+# CMakeLists.txt for LLM Systems from Scratch
 cmake_minimum_required(VERSION 3.20)
 project(llm-systems-from-scratch LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) 
 
 # Fix DLL mismatch on Windows
 if(WIN32)

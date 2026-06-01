@@ -61,6 +61,8 @@ pacman -S mingw-w64-ucrt-x86_64-gdb
 
 # fmt library (string formatting)
 pacman -S mingw-w64-ucrt-x86_64-fmt
+
+pacman -S mingw-w64-ucrt-x86_64-clang-tools-extra
 ```
 
 ---
